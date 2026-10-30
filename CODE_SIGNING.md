@@ -1,9 +1,9 @@
 # Code signing policy
 
-Windows releases of winToMac are to be signed with free code signing provided by [SignPath.io](https://about.signpath.io/), certificate by [SignPath Foundation](https://signpath.org/).
-
-> Status: the application to SignPath Foundation is in progress. Releases up to and including 1.3.0 are **not signed**.
-> As soon as signing is enabled, this note will be updated and every new release will be signed.
+> **Status: winToMac releases are currently not code-signed.**
+> Windows SmartScreen may show an "unknown publisher" warning on first launch — click **More info → Run anyway**.
+> Updates installed from inside the app are not affected by this warning.
+> We plan to sign releases (for example through the [SignPath Foundation](https://signpath.org/) program for open-source projects) once the project is eligible. This page describes the rules that will apply to signed releases.
 
 ## What is signed
 
