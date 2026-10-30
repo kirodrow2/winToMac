@@ -56,6 +56,7 @@ const I18N = {
     footerLicense: "winToMac is free open-source software under the MIT license.",
     footerTrademark: "Not affiliated with Apple Inc. or Microsoft. macOS and Windows are trademarks of their owners.",
     footerSource: "Source code on GitHub",
+    footerPrivacy: "Privacy policy", footerSigning: "Code signing policy",
   },
 
   ru: {
@@ -114,6 +115,7 @@ const I18N = {
     footerLicense: "winToMac — бесплатная программа с открытым кодом по лицензии MIT.",
     footerTrademark: "Не связана с Apple Inc. и Microsoft. macOS и Windows — товарные знаки их владельцев.",
     footerSource: "Исходный код на GitHub",
+    footerPrivacy: "Конфиденциальность", footerSigning: "Политика подписи кода",
   },
 
   zh: {
@@ -172,6 +174,7 @@ const I18N = {
     footerLicense: "winToMac 是基于 MIT 许可证的免费开源软件。",
     footerTrademark: "与 Apple Inc. 和 Microsoft 无关。macOS 和 Windows 是其各自所有者的商标。",
     footerSource: "GitHub 上的源代码",
+    footerPrivacy: "隐私政策", footerSigning: "代码签名政策",
   },
 
   es: {
@@ -230,6 +233,7 @@ const I18N = {
     footerLicense: "winToMac es software libre y de código abierto bajo la licencia MIT.",
     footerTrademark: "Sin relación con Apple Inc. ni Microsoft. macOS y Windows son marcas de sus propietarios.",
     footerSource: "Código fuente en GitHub",
+    footerPrivacy: "Política de privacidad", footerSigning: "Política de firma de código",
   },
 
   hi: {
@@ -288,6 +292,7 @@ const I18N = {
     footerLicense: "winToMac MIT लाइसेंस के तहत मुफ़्त ओपन-सोर्स सॉफ़्टवेयर है।",
     footerTrademark: "Apple Inc. या Microsoft से संबद्ध नहीं। macOS और Windows अपने स्वामियों के ट्रेडमार्क हैं।",
     footerSource: "GitHub पर सोर्स कोड",
+    footerPrivacy: "गोपनीयता नीति", footerSigning: "कोड साइनिंग नीति",
   },
 
   ar: {
@@ -346,6 +351,7 @@ const I18N = {
     footerLicense: "winToMac برنامج مجاني مفتوح المصدر بموجب ترخيص MIT.",
     footerTrademark: "غير مرتبط بشركة Apple Inc. أو Microsoft. ‏macOS و Windows علامتان تجاريتان لمالكيهما.",
     footerSource: "الشيفرة المصدرية على GitHub",
+    footerPrivacy: "سياسة الخصوصية", footerSigning: "سياسة توقيع الشيفرة",
   },
 
   pt: {
@@ -404,6 +410,7 @@ const I18N = {
     footerLicense: "O winToMac é software livre e de código aberto sob a licença MIT.",
     footerTrademark: "Sem vínculo com a Apple Inc. ou a Microsoft. macOS e Windows são marcas dos seus proprietários.",
     footerSource: "Código-fonte no GitHub",
+    footerPrivacy: "Política de privacidade", footerSigning: "Política de assinatura de código",
   },
 
   fr: {
@@ -462,6 +469,7 @@ const I18N = {
     footerLicense: "winToMac est un logiciel libre et open source sous licence MIT.",
     footerTrademark: "Sans lien avec Apple Inc. ni Microsoft. macOS et Windows sont des marques de leurs propriétaires.",
     footerSource: "Code source sur GitHub",
+    footerPrivacy: "Confidentialité", footerSigning: "Politique de signature du code",
   },
 
   de: {
@@ -520,6 +528,7 @@ const I18N = {
     footerLicense: "winToMac ist kostenlose Open-Source-Software unter der MIT-Lizenz.",
     footerTrademark: "Nicht mit Apple Inc. oder Microsoft verbunden. macOS und Windows sind Marken ihrer Inhaber.",
     footerSource: "Quellcode auf GitHub",
+    footerPrivacy: "Datenschutz", footerSigning: "Richtlinie zur Codesignatur",
   },
 
   ja: {
@@ -578,5 +587,6 @@ const I18N = {
     footerLicense: "winToMac は MIT ライセンスの無料オープンソースソフトウェアです。",
     footerTrademark: "Apple Inc. および Microsoft とは関係ありません。macOS と Windows は各所有者の商標です。",
     footerSource: "GitHub のソースコード",
+    footerPrivacy: "プライバシーポリシー", footerSigning: "コード署名ポリシー",
   },
 };
