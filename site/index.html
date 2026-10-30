@@ -236,7 +236,7 @@ footer p { margin: 4px 0; }
 <script src="i18n.js"></script>
 <script>
 // Репозиторий на GitHub: ссылка на скачивание и счётчик загрузок берутся из его Releases
-const REPO = "OWNER/winToMac";
+const REPO = "kirodrow2/winToMac";
 const DOWNLOAD = `https://github.com/${REPO}/releases/latest/download/winToMac.zip`;
 
 const select = document.getElementById("lang");
@@ -308,7 +308,7 @@ function updateDownloads() {
   const label = I18N[current].downloads ?? I18N.en.downloads;
   el.textContent = "· " + label.replace("{0}", downloads.toLocaleString(current));
 }
-if (!REPO.startsWith("OWNER/")) {
+{
   fetch(`https://api.github.com/repos/${REPO}/releases?per_page=100`)
     .then(r => r.ok ? r.json() : [])
     .then(releases => {

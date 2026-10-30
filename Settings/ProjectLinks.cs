@@ -16,7 +16,7 @@ public sealed record DonationLink(string Title, string? Url = null, string? Addr
 public static class ProjectLinks
 {
     /// <summary>Страница проекта (GitHub, сайт). Пусто — кнопка не показывается.</summary>
-    public const string Website = "";
+    public const string Website = "https://kirodrow2.github.io/winToMac/";
 
     /// <summary>Связь с автором: пожелания и новые функции.</summary>
     public const string Telegram = "https://t.me/KKIIIROO";
