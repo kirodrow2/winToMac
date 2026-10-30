@@ -3,6 +3,8 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Windows.Media.Effects;
+using System.Windows.Threading;
+using WinToMac.Native;
 
 namespace WinToMac.UI;
 
@@ -13,6 +15,17 @@ namespace WinToMac.UI;
 public sealed class MacMenu
 {
     private static Popup? _openPopup;
+
+    // Клик снаружи отслеживаем сами: Popup со StaysOpen=false держит захват мыши,
+    // а ползунок и календарь внутри меню этот захват сбивают — после них меню переставало
+    // закрываться по клику мимо. К тому же штатный Popup «съедал» этот клик.
+    private static readonly DispatcherTimer OutsideClickTimer = new() { Interval = TimeSpan.FromMilliseconds(30) };
+    private static bool _wasButtonDown;
+    private static IntPtr _foregroundOnOpen;
+
+    // Клик по тому же пункту панели закрывает меню и не должен тут же открыть его снова
+    private static UIElement? _closedByTarget;
+    private static DateTime _closedByTargetAt;
 
     private readonly StackPanel _panel = new() { MinWidth = 220 };
     private readonly Popup _popup;
@@ -36,7 +49,7 @@ public sealed class MacMenu
         _popup = new Popup
         {
             AllowsTransparency = true,
-            StaysOpen = false,
+            StaysOpen = true,
             Child = border,
             PopupAnimation = PopupAnimation.Fade,
         };
@@ -45,6 +58,7 @@ public sealed class MacMenu
             if (_openPopup == _popup)
             {
                 _openPopup = null;
+                OutsideClickTimer.Stop();
             }
         };
     }
@@ -131,8 +145,20 @@ public sealed class MacMenu
         return this;
     }
 
+    static MacMenu()
+    {
+        OutsideClickTimer.Tick += (_, _) => CheckOutsideClick();
+    }
+
     public void Show(UIElement target, PlacementMode placement)
     {
+        if (_closedByTarget == target && DateTime.UtcNow - _closedByTargetAt < TimeSpan.FromMilliseconds(600))
+        {
+            _closedByTarget = null;
+            return;
+        }
+
+        _closedByTarget = null;
         if (_openPopup != null)
         {
             _openPopup.IsOpen = false;
@@ -145,6 +171,70 @@ public sealed class MacMenu
         _popup.VerticalOffset = placement == PlacementMode.Top ? 8 : -8;
         _popup.IsOpen = true;
         _openPopup = _popup;
+
+        // Кнопка, которой меню открыли, ещё может быть нажата — её нажатие не считаем
+        _wasButtonDown = true;
+        _foregroundOnOpen = NativeMethods.GetForegroundWindow();
+        OutsideClickTimer.Start();
+    }
+
+    private static void CheckOutsideClick()
+    {
+        var popup = _openPopup;
+        if (popup == null || !popup.IsOpen || popup.Child is not FrameworkElement content)
+        {
+            OutsideClickTimer.Stop();
+            return;
+        }
+
+        // Переключились на другое окно с клавиатуры (Alt+Tab, Win) — меню больше не нужно
+        var foreground = NativeMethods.GetForegroundWindow();
+        if (foreground != _foregroundOnOpen && !IsOwnWindow(foreground))
+        {
+            popup.IsOpen = false;
+            return;
+        }
+
+        bool isDown = IsPressed(0x01) || IsPressed(0x02) || IsPressed(0x04);
+        bool isNewClick = isDown && !_wasButtonDown;
+        _wasButtonDown = isDown;
+        if (!isNewClick || !NativeMethods.GetCursorPos(out var cursor))
+        {
+            return;
+        }
+
+        if (IsInside(content, cursor))
+        {
+            return;
+        }
+
+        if (popup.PlacementTarget is FrameworkElement target && IsInside(target, cursor))
+        {
+            _closedByTarget = target;
+            _closedByTargetAt = DateTime.UtcNow;
+        }
+
+        popup.IsOpen = false;
+    }
+
+    private static bool IsPressed(int vk) => (NativeMethods.GetAsyncKeyState(vk) & 0x8000) != 0;
+
+    private static bool IsOwnWindow(IntPtr hwnd)
+    {
+        NativeMethods.GetWindowThreadProcessId(hwnd, out uint processId);
+        return processId == (uint)Environment.ProcessId;
+    }
+
+    private static bool IsInside(FrameworkElement element, POINT cursor)
+    {
+        if (PresentationSource.FromVisual(element) == null)
+        {
+            return false;
+        }
+
+        var topLeft = element.PointToScreen(new Point(0, 0));
+        var bottomRight = element.PointToScreen(new Point(element.ActualWidth, element.ActualHeight));
+        return cursor.X >= topLeft.X && cursor.X < bottomRight.X && cursor.Y >= topLeft.Y && cursor.Y < bottomRight.Y;
     }
 
     private static TextBlock CreateText(string text, string brushKey)

@@ -160,6 +160,9 @@ public static class NativeMethods
     public static extern bool GetCursorPos(out POINT point);
 
     [DllImport("user32.dll")]
+    public static extern short GetAsyncKeyState(int vk);
+
+    [DllImport("user32.dll")]
     public static extern IntPtr GetKeyboardLayout(uint threadId);
 
     [DllImport("user32.dll")]
