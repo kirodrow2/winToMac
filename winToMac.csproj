@@ -1,0 +1,47 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <!-- Окно живых обоев — WinForms + WebView2 (как в Lively): только такое окно видно под значками на 24H2+ -->
+    <UseWindowsForms>true</UseWindowsForms>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>WinToMac</RootNamespace>
+    <AssemblyName>winToMac</AssemblyName>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
+    <!-- Позволяет собирать проект из WSL/Linux -->
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+    <!-- Сведения о программе: видны в «Свойства → Подробно» и в окне «О программе» -->
+    <ApplicationIcon>Assets\winToMac.ico</ApplicationIcon>
+    <Version>1.2.0</Version>
+    <Product>winToMac</Product>
+    <AssemblyTitle>winToMac</AssemblyTitle>
+    <Description>macOS-style dock, menu bar, keyboard shortcuts and live wallpapers for Windows</Description>
+    <Company>winToMac</Company>
+    <Copyright>© 2026 winToMac</Copyright>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Служба трея: значки фоновых программ в верхней панели -->
+    <PackageReference Include="ManagedShell" Version="0.0.374" />
+    <!-- Плеер живых обоев: видео и анимации через движок Edge с аппаратным ускорением -->
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4258.31" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Переводы интерфейса: Localization/<язык>.json, ключ — русский текст -->
+    <EmbeddedResource Include="Localization\*.json" Exclude="Localization\keys.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Остальной код — WPF: глобальные using WinForms дали бы конфликты имён (Application, MessageBox…) -->
+    <Using Remove="System.Windows.Forms" />
+    <Using Remove="System.Drawing" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,21 @@
+<Window x:Class="WinToMac.UI.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Настройки winToMac"
+        Width="620" Height="760"
+        WindowStartupLocation="CenterScreen"
+        FontFamily="{StaticResource UiFont}"
+        FontSize="13"
+        Background="{DynamicResource Menu.Background}"
+        Foreground="{DynamicResource Menu.Foreground}">
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Margin="20,10,20,16">
+            <Button x:Name="OpenFolderButton" Padding="12,5" Margin="0,0,8,0" Click="OnOpenFolderClick" />
+            <Button x:Name="ResetButton" Padding="12,5" Margin="0,0,8,0" Click="OnResetClick" />
+            <Button x:Name="DoneButton" Padding="18,5" IsDefault="True" Click="OnCloseClick" />
+        </StackPanel>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel x:Name="SettingsPanel" Margin="24,12,24,0" />
+        </ScrollViewer>
+    </DockPanel>
+</Window>

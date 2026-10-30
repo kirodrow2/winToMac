@@ -1,0 +1,21 @@
+winToMac — free software for Windows.
+
+winToMac is an independent project. It is not affiliated with, endorsed by or
+sponsored by Apple Inc. or Microsoft Corporation. Apple, Mac, macOS and Apple TV
+are trademarks of Apple Inc. Windows is a trademark of Microsoft Corporation.
+The names are used only to describe compatibility and appearance.
+
+Apple Aerial screensaver videos are not included in winToMac. At the user's
+request they are downloaded directly from Apple's servers for personal use.
+
+Third-party components bundled in winToMac.exe:
+
+1. ManagedShell 0.0.374 — https://github.com/cairoshell/ManagedShell
+   License: Apache License 2.0 (see Apache-2.0.txt).
+
+2. Microsoft.Web.WebView2 1.0.4258.31 — https://aka.ms/webview
+   © Microsoft Corporation. License: see WebView2-LICENSE.txt.
+
+3. .NET 8 runtime, WPF and Windows Forms — https://github.com/dotnet
+   © .NET Foundation and Contributors. License: MIT (see dotnet-LICENSE.txt
+   and dotnet-THIRD-PARTY-NOTICES.txt).

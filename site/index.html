@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>winToMac</title>
+<meta name="description" content="winToMac — free, lightweight macOS-style dock, menu bar, Mac keyboard shortcuts and live wallpapers for Windows 10 and 11.">
+<meta property="og:title" content="winToMac — macOS look for Windows">
+<meta property="og:description" content="Dock, menu bar, Mac keyboard and live wallpapers. Free, one small file, no installer.">
+<meta property="og:image" content="icon.png">
+<link rel="icon" href="icon.png">
+<style>
+:root {
+  --bg: #f5f5f7; --surface: #ffffff; --text: #1d1d1f; --muted: #6e6e73; --line: #e2e2e7;
+  --accent: #0071e3; --accent-text: #ffffff; --chip: #eef3fd;
+  --hero1: #c9d9ff; --hero2: #f3d3ec; --hero3: #d6f5ea;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #000000; --surface: #161618; --text: #f5f5f7; --muted: #a1a1a6; --line: #2c2c30;
+    --accent: #2997ff; --accent-text: #ffffff; --chip: #10233d;
+    --hero1: #1b2a55; --hero2: #3b1d3a; --hero3: #12352c;
+  }
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+html, body { overflow-x: hidden; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font: 17px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI Variable", "Segoe UI", "Noto Sans", sans-serif;
+}
+a { color: var(--accent); text-decoration: none; }
+.wrap { max-width: 1100px; margin: 0 auto; padding: 0 16px; }
+header.nav {
+  position: sticky; top: 0; z-index: 10; backdrop-filter: saturate(180%) blur(18px);
+  background: color-mix(in srgb, var(--bg) 78%, transparent); border-bottom: 1px solid var(--line);
+}
+header.nav .wrap { display: flex; align-items: center; gap: 16px; height: 56px; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 600; color: var(--text); }
+.brand img { width: 28px; height: 28px; }
+.nav .links { display: flex; gap: 18px; margin-inline-start: auto; font-size: 15px; }
+.nav .links a { color: var(--muted); }
+.nav .links a:hover { color: var(--text); }
+select.lang {
+  font: inherit; font-size: 14px; padding: 5px 8px; border-radius: 8px;
+  border: 1px solid var(--line); background: var(--surface); color: var(--text);
+}
+.btn {
+  display: inline-flex; align-items: center; gap: 10px; padding: 14px 26px; border-radius: 980px;
+  background: var(--accent); color: var(--accent-text); font-weight: 600; font-size: 18px; border: 0; cursor: pointer;
+}
+.btn:hover { filter: brightness(1.08); }
+.btn.ghost { background: transparent; color: var(--accent); border: 1px solid var(--accent); padding: 10px 20px; font-size: 15px; }
+.hero { text-align: center; padding: 72px 0 40px; position: relative; overflow: hidden; }
+.hero::before {
+  content: ""; position: absolute; inset: -20% -10% auto; height: 120%; z-index: -1; filter: blur(60px); opacity: .9;
+  background: radial-gradient(40% 50% at 25% 40%, var(--hero1), transparent),
+              radial-gradient(35% 45% at 75% 35%, var(--hero2), transparent),
+              radial-gradient(40% 40% at 50% 80%, var(--hero3), transparent);
+}
+.hero img.logo { width: 112px; height: 112px; }
+.hero h1 { font-size: clamp(38px, 7vw, 68px); line-height: 1.05; margin: 18px 0 12px; letter-spacing: -0.02em; }
+.hero p.lead { font-size: clamp(18px, 2.4vw, 23px); color: var(--muted); max-width: 760px; margin: 0 auto 28px; }
+.meta { margin-top: 14px; color: var(--muted); font-size: 14px; }
+.chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 22px; }
+.chip { background: var(--chip); color: var(--text); border-radius: 980px; padding: 6px 14px; font-size: 14px; }
+
+/* Макет рабочего стола: строка меню + док */
+.desk {
+  margin: 44px auto 0; max-width: 960px; aspect-ratio: 16 / 8.2; border-radius: 18px; position: relative; overflow: hidden;
+  box-shadow: 0 30px 80px rgba(0,0,0,.25); border: 1px solid var(--line);
+  background: radial-gradient(60% 80% at 20% 30%, #5b7cfa, transparent), radial-gradient(60% 80% at 80% 20%, #e86fb6, transparent),
+              radial-gradient(70% 80% at 60% 90%, #2fc5a0, transparent), #1e2240;
+  animation: drift 18s ease-in-out infinite alternate; background-size: 140% 140%;
+}
+@keyframes drift { from { background-position: 0% 0%; } to { background-position: 100% 100%; } }
+@media (prefers-reduced-motion: reduce) { .desk { animation: none; } }
+.menubar {
+  position: absolute; inset: 0 0 auto; height: 7%; min-height: 22px; display: flex; align-items: center; gap: 2.2%;
+  padding: 0 2%; color: #fff; font-size: clamp(9px, 1.4vw, 14px); background: rgba(20,20,30,.35); backdrop-filter: blur(20px);
+}
+.menubar b { font-weight: 700; }
+.menubar .right { margin-inline-start: auto; display: flex; gap: 14px; opacity: .95; }
+.dock {
+  position: absolute; bottom: 3%; left: 50%; transform: translateX(-50%); display: flex; gap: 1.1vw; padding: 1vw 1.3vw;
+  border-radius: 22px; background: rgba(255,255,255,.22); border: 1px solid rgba(255,255,255,.35); backdrop-filter: blur(20px);
+}
+.dock span {
+  width: clamp(24px, 4.6vw, 52px); aspect-ratio: 1; border-radius: 24%; display: block; transition: transform .18s;
+  box-shadow: 0 2px 6px rgba(0,0,0,.25);
+}
+.dock span:hover { transform: translateY(-22%) scale(1.35); }
+.dock .sep { width: 1px; background: rgba(255,255,255,.5); box-shadow: none; border-radius: 0; }
+
+section { padding: 64px 0; }
+section h2 { font-size: clamp(30px, 4.5vw, 44px); text-align: center; margin: 0 0 10px; letter-spacing: -0.015em; }
+section p.sub { text-align: center; color: var(--muted); max-width: 720px; margin: 0 auto 36px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 22px 22px 18px; }
+.card .ic { font-size: 30px; line-height: 1; }
+.card h3 { margin: 12px 0 6px; font-size: 19px; }
+.card p { margin: 0; color: var(--muted); font-size: 15.5px; }
+.light { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+.light .card { text-align: center; }
+.light .big { font-size: 34px; font-weight: 700; color: var(--accent); }
+ol.steps { max-width: 720px; margin: 0 auto; padding: 0; list-style: none; counter-reset: step; }
+ol.steps li {
+  counter-increment: step; position: relative; padding: 16px 18px 16px 64px; margin-bottom: 12px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+}
+[dir="rtl"] ol.steps li { padding: 16px 64px 16px 18px; }
+ol.steps li::before {
+  content: counter(step); position: absolute; inset-inline-start: 18px; top: 14px; width: 30px; height: 30px; border-radius: 50%;
+  background: var(--accent); color: var(--accent-text); display: grid; place-items: center; font-weight: 700;
+}
+.support { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+.support .card { display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
+code.addr {
+  display: block; width: 100%; word-break: break-all; font-size: 14px; padding: 10px 12px; border-radius: 10px;
+  background: var(--bg); border: 1px solid var(--line);
+}
+.copied { color: #1a9c4b; font-size: 14px; min-height: 1em; }
+footer { border-top: 1px solid var(--line); padding: 28px 0 40px; color: var(--muted); font-size: 14px; text-align: center; }
+footer p { margin: 4px 0; }
+@media (max-width: 640px) {
+  .nav .links { display: none; }
+  header.nav select.lang { margin-inline-start: auto; }
+  .hero { padding-top: 44px; }
+}
+</style>
+</head>
+<body>
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#"><img src="icon.png" alt=""><span>winToMac</span></a>
+    <nav class="links">
+      <a href="#features" data-i18n="navFeatures"></a>
+      <a href="#light" data-i18n="navLight"></a>
+      <a href="#install" data-i18n="navInstall"></a>
+      <a href="#support" data-i18n="navSupport"></a>
+    </nav>
+    <select class="lang" id="lang" aria-label="Language"></select>
+  </div>
+</header>
+
+<main>
+  <div class="hero">
+    <div class="wrap">
+      <img class="logo" src="icon.png" alt="winToMac">
+      <h1 data-i18n="heroTitle"></h1>
+      <p class="lead" data-i18n="heroLead"></p>
+      <a class="btn download" href="#" data-i18n="download"></a>
+      <div class="meta"><span data-i18n="heroMeta"></span> <span id="downloads"></span></div>
+      <div class="chips">
+        <span class="chip" data-i18n="chipFree"></span>
+        <span class="chip" data-i18n="chipLight"></span>
+        <span class="chip" data-i18n="chipNoInstall"></span>
+        <span class="chip" data-i18n="chipLanguages"></span>
+        <span class="chip" data-i18n="chipOpen"></span>
+      </div>
+      <div class="desk" aria-hidden="true">
+        <div class="menubar"><img src="icon.png" alt="" style="height:70%"><b>Finder</b><span data-i18n="mFile"></span><span data-i18n="mEdit"></span><span data-i18n="mView"></span>
+          <div class="right"><span>EN</span><span>Wi‑Fi</span><span>🔋 87%</span><span id="clock"></span></div></div>
+        <div class="dock">
+          <span style="background:linear-gradient(135deg,#ff6a5c,#ffbd2e)"></span>
+          <span style="background:linear-gradient(135deg,#34c3ff,#1a73e8)"></span>
+          <span style="background:linear-gradient(135deg,#7ee38b,#1fa463)"></span>
+          <span style="background:linear-gradient(135deg,#c86bff,#6a3df0)"></span>
+          <span style="background:linear-gradient(135deg,#ffd75e,#ff9f0a)"></span>
+          <span style="background:linear-gradient(135deg,#ff7aa8,#e8336d)"></span>
+          <span style="background:linear-gradient(135deg,#9ad0ff,#4f7cff)"></span>
+          <span class="sep"></span>
+          <span style="background:linear-gradient(135deg,#d7dbe2,#9aa1ad)"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section id="features">
+    <div class="wrap">
+      <h2 data-i18n="featuresTitle"></h2>
+      <p class="sub" data-i18n="featuresSub"></p>
+      <div class="grid" id="featureGrid"></div>
+    </div>
+  </section>
+
+  <section id="light">
+    <div class="wrap">
+      <h2 data-i18n="lightTitle"></h2>
+      <p class="sub" data-i18n="lightSub"></p>
+      <div class="light" id="lightGrid"></div>
+    </div>
+  </section>
+
+  <section id="install">
+    <div class="wrap">
+      <h2 data-i18n="installTitle"></h2>
+      <p class="sub" data-i18n="installSub"></p>
+      <ol class="steps" id="steps"></ol>
+      <p style="text-align:center;margin-top:28px"><a class="btn download" href="#" data-i18n="download"></a></p>
+    </div>
+  </section>
+
+  <section id="support">
+    <div class="wrap">
+      <h2 data-i18n="supportTitle"></h2>
+      <p class="sub" data-i18n="supportSub"></p>
+      <div class="support">
+        <div class="card">
+          <div class="ic">♥</div>
+          <h3 data-i18n="donateTitle"></h3>
+          <p data-i18n="donateText"></p>
+          <code class="addr" id="wallet">TVFPXbERNMH5u6DS2vAqEWt9gBCuKhMcbZ</code>
+          <button class="btn ghost" id="copyWallet" data-i18n="copy"></button>
+          <span class="copied" id="copied" aria-live="polite"></span>
+        </div>
+        <div class="card">
+          <div class="ic">💡</div>
+          <h3 data-i18n="ideaTitle"></h3>
+          <p data-i18n="ideaText"></p>
+          <a class="btn ghost" href="https://t.me/KKIIIROO" target="_blank" rel="noopener" data-i18n="ideaButton"></a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p data-i18n="footerLicense"></p>
+    <p data-i18n="footerTrademark"></p>
+    <p><a id="sourceLink" href="#" data-i18n="footerSource"></a></p>
+  </div>
+</footer>
+
+<script src="i18n.js"></script>
+<script>
+// Репозиторий на GitHub: ссылка на скачивание и счётчик загрузок берутся из его Releases
+const REPO = "OWNER/winToMac";
+const DOWNLOAD = `https://github.com/${REPO}/releases/latest/download/winToMac.zip`;
+
+const select = document.getElementById("lang");
+for (const [code, pack] of Object.entries(I18N)) {
+  select.add(new Option(pack.name, code));
+}
+
+function pickLanguage() {
+  const fromHash = location.hash.slice(1);
+  if (I18N[fromHash]) return fromHash;
+  let saved = null;
+  try { saved = localStorage.getItem("winToMac.lang"); } catch (e) {}
+  if (saved && I18N[saved]) return saved;
+  for (const wanted of navigator.languages || [navigator.language || "en"]) {
+    const code = wanted.slice(0, 2).toLowerCase();
+    if (I18N[code]) return code;
+    if (["be", "kk", "uk", "ky", "uz"].includes(code)) return "ru";
+  }
+  return "en";
+}
+
+let current = "en";
+function apply(code) {
+  current = code;
+  const t = key => I18N[code][key] ?? I18N.en[key] ?? "";
+  document.documentElement.lang = code;
+  document.documentElement.dir = code === "ar" ? "rtl" : "ltr";
+  select.value = code;
+  document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = t(el.dataset.i18n); });
+  document.title = "winToMac — " + t("heroTitle");
+
+  const features = I18N[code].features ?? I18N.en.features;
+  document.getElementById("featureGrid").innerHTML = features.map(([icon, title, text]) =>
+    `<div class="card"><div class="ic">${icon}</div><h3>${title}</h3><p>${text}</p></div>`).join("");
+  const light = I18N[code].light ?? I18N.en.light;
+  document.getElementById("lightGrid").innerHTML = light.map(([big, text]) =>
+    `<div class="card"><div class="big">${big}</div><p>${text}</p></div>`).join("");
+  const steps = I18N[code].steps ?? I18N.en.steps;
+  // {logo} — значок меню winToMac в левом верхнем углу
+  document.getElementById("steps").innerHTML = steps
+    .map(step => `<li>${step.replace("{logo}", '<img src="icon.png" alt="winToMac" style="height:1.1em;vertical-align:-0.2em">')}</li>`).join("");
+  document.getElementById("copied").textContent = "";
+  updateDownloads();
+  try { localStorage.setItem("winToMac.lang", code); } catch (e) {}
+}
+
+select.addEventListener("change", () => apply(select.value));
+document.querySelectorAll("a.download").forEach(a => { a.href = DOWNLOAD; });
+document.getElementById("sourceLink").href = `https://github.com/${REPO}`;
+
+document.getElementById("copyWallet").addEventListener("click", async () => {
+  const address = document.getElementById("wallet").textContent.trim();
+  try {
+    await navigator.clipboard.writeText(address);
+  } catch (e) {
+    const range = document.createRange();
+    range.selectNodeContents(document.getElementById("wallet"));
+    getSelection().removeAllRanges();
+    getSelection().addRange(range);
+  }
+  document.getElementById("copied").textContent = I18N[current].copied ?? I18N.en.copied;
+});
+
+// Счётчик скачиваний: сумма download_count по всем релизам (публичный API GitHub, без ключей)
+let downloads = null;
+function updateDownloads() {
+  const el = document.getElementById("downloads");
+  if (downloads === null) { el.textContent = ""; return; }
+  const label = I18N[current].downloads ?? I18N.en.downloads;
+  el.textContent = "· " + label.replace("{0}", downloads.toLocaleString(current));
+}
+if (!REPO.startsWith("OWNER/")) {
+  fetch(`https://api.github.com/repos/${REPO}/releases?per_page=100`)
+    .then(r => r.ok ? r.json() : [])
+    .then(releases => {
+      downloads = releases.flatMap(r => r.assets || []).reduce((sum, a) => sum + a.download_count, 0);
+      if (downloads > 0) updateDownloads(); else downloads = null;
+    })
+    .catch(() => {});
+}
+
+function tick() {
+  const now = new Date();
+  document.getElementById("clock").textContent =
+    now.toLocaleTimeString(current, { hour: "2-digit", minute: "2-digit" });
+}
+apply(pickLanguage());
+tick();
+setInterval(tick, 30000);
+</script>
+</body>
+</html>

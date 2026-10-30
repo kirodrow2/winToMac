@@ -1,0 +1,91 @@
+<Window x:Class="WinToMac.UI.TopBarWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="winToMac Top Bar"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        Topmost="True"
+        Background="Transparent"
+        FontFamily="{StaticResource UiFont}"
+        Foreground="{DynamicResource Bar.Foreground}">
+    <Window.Resources>
+        <!-- Элемент строки меню: подсвечивается при наведении, как в macOS -->
+        <Style x:Key="BarItem" TargetType="Border">
+            <Setter Property="Padding" Value="8,0" />
+            <Setter Property="Margin" Value="1,3" />
+            <Setter Property="CornerRadius" Value="5" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="VerticalAlignment" Value="Stretch" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource Bar.Hover}" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="BarText" TargetType="TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style x:Key="BarIcon" TargetType="TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="FontFamily" Value="{StaticResource IconFont}" />
+        </Style>
+    </Window.Resources>
+
+    <!-- Подложку рисуем сами (окно полупрозрачное, как у дока), под ней — системное размытие -->
+    <Border Background="{DynamicResource Bar.Background}">
+        <DockPanel x:Name="Root" Margin="6,0" LastChildFill="False">
+            <!-- Слева: «логотип» с системным меню и название активного приложения -->
+            <Border x:Name="LogoItem" Style="{StaticResource BarItem}" DockPanel.Dock="Left"
+                    MouseLeftButtonUp="OnLogoClick" Padding="10,0">
+                <Grid Width="13" Height="13" VerticalAlignment="Center">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="1.5" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition Height="1.5" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Rectangle Grid.Row="0" Grid.Column="0" Fill="{DynamicResource Bar.Foreground}" RadiusX="1" RadiusY="1" />
+                    <Rectangle Grid.Row="0" Grid.Column="2" Fill="{DynamicResource Bar.Foreground}" RadiusX="1" RadiusY="1" />
+                    <Rectangle Grid.Row="2" Grid.Column="0" Fill="{DynamicResource Bar.Foreground}" RadiusX="1" RadiusY="1" />
+                    <Rectangle Grid.Row="2" Grid.Column="2" Fill="{DynamicResource Bar.Foreground}" RadiusX="1" RadiusY="1" />
+                </Grid>
+            </Border>
+            <Border x:Name="AppNameItem" Style="{StaticResource BarItem}" DockPanel.Dock="Left"
+                    MouseLeftButtonUp="OnAppNameClick">
+                <TextBlock x:Name="AppNameText" Style="{StaticResource BarText}" FontWeight="Bold"  />
+            </Border>
+
+            <!-- Справа налево: часы, громкость, сеть, батарея, раскладка, значки трея -->
+            <Border x:Name="ClockItem" Style="{StaticResource BarItem}" DockPanel.Dock="Right"
+                    MouseLeftButtonUp="OnClockClick">
+                <TextBlock x:Name="ClockText" Style="{StaticResource BarText}" />
+            </Border>
+            <Border x:Name="VolumeItem" Style="{StaticResource BarItem}" DockPanel.Dock="Right"
+                    MouseLeftButtonUp="OnVolumeClick" MouseWheel="OnVolumeWheel">
+                <TextBlock x:Name="VolumeIcon" Style="{StaticResource BarIcon}" Text="&#xE995;" />
+            </Border>
+            <Border x:Name="NetworkItem" Style="{StaticResource BarItem}" DockPanel.Dock="Right"
+                    MouseLeftButtonUp="OnNetworkClick">
+                <TextBlock x:Name="NetworkIcon" Style="{StaticResource BarIcon}" Text="&#xE701;" />
+            </Border>
+            <Border x:Name="BatteryItem" Style="{StaticResource BarItem}" DockPanel.Dock="Right"
+                    MouseLeftButtonUp="OnBatteryClick" Visibility="Collapsed">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock x:Name="BatteryText" Style="{StaticResource BarText}" Margin="0,0,5,0" />
+                    <TextBlock x:Name="BatteryIcon" Style="{StaticResource BarIcon}" Text="&#xE83F;" />
+                </StackPanel>
+            </Border>
+            <Border x:Name="LanguageItem" Style="{StaticResource BarItem}" DockPanel.Dock="Right"
+                    MouseLeftButtonUp="OnLanguageClick">
+                <TextBlock x:Name="LanguageText" Style="{StaticResource BarText}" FontWeight="SemiBold" />
+            </Border>
+            <StackPanel x:Name="TrayPanel" Orientation="Horizontal" DockPanel.Dock="Right" Margin="0,0,4,0" />
+        </DockPanel>
+    </Border>
+</Window>

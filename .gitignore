@@ -1,0 +1,7 @@
+bin/
+obj/
+Program/
+release/
+__pycache__/
+.vs/
+*.user
