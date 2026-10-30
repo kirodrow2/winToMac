@@ -75,6 +75,10 @@ select.lang {
 }
 @keyframes drift { from { background-position: 0% 0%; } to { background-position: 100% 100%; } }
 @media (prefers-reduced-motion: reduce) { .desk { animation: none; } }
+.shot {
+  display: block; width: 100%; max-width: 1100px; height: auto; margin: 44px auto 0; border-radius: 14px;
+  border: 1px solid var(--line); box-shadow: 0 30px 80px rgba(0,0,0,.25);
+}
 .menubar {
   position: absolute; inset: 0 0 auto; height: 7%; min-height: 22px; display: flex; align-items: center; gap: 2.2%;
   padding: 0 2%; color: #fff; font-size: clamp(9px, 1.4vw, 14px); background: rgba(20,20,30,.35); backdrop-filter: blur(20px);
@@ -159,20 +163,8 @@ footer p { margin: 4px 0; }
         <span class="chip" data-i18n="chipLanguages"></span>
         <span class="chip" data-i18n="chipOpen"></span>
       </div>
-      <div class="desk" aria-hidden="true">
-        <div class="menubar"><img src="icon.png" alt="" style="height:70%"><b>Finder</b><span data-i18n="mFile"></span><span data-i18n="mEdit"></span><span data-i18n="mView"></span>
-          <div class="right"><span>EN</span><span>Wi‑Fi</span><span>🔋 87%</span><span id="clock"></span></div></div>
-        <div class="dock">
-          <span style="background:linear-gradient(135deg,#ff6a5c,#ffbd2e)"></span>
-          <span style="background:linear-gradient(135deg,#34c3ff,#1a73e8)"></span>
-          <span style="background:linear-gradient(135deg,#7ee38b,#1fa463)"></span>
-          <span style="background:linear-gradient(135deg,#c86bff,#6a3df0)"></span>
-          <span style="background:linear-gradient(135deg,#ffd75e,#ff9f0a)"></span>
-          <span style="background:linear-gradient(135deg,#ff7aa8,#e8336d)"></span>
-          <span style="background:linear-gradient(135deg,#9ad0ff,#4f7cff)"></span>
-          <span class="sep"></span>
-          <span style="background:linear-gradient(135deg,#d7dbe2,#9aa1ad)"></span>
-        </div>
+      <img class="shot" src="screenshot.jpg" width="2400" height="1005"
+        alt="winToMac on Windows 11: macOS-style menu bar, Dock and a live Apple Aerial wallpaper">
       </div>
     </div>
   </div>
@@ -324,14 +316,7 @@ function updateDownloads() {
     .catch(() => {});
 }
 
-function tick() {
-  const now = new Date();
-  document.getElementById("clock").textContent =
-    now.toLocaleTimeString(current, { hour: "2-digit", minute: "2-digit" });
-}
 apply(pickLanguage());
-tick();
-setInterval(tick, 30000);
 </script>
 </body>
 </html>

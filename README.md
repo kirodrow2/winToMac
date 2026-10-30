@@ -2,6 +2,8 @@
 
 **Сайт и скачивание:** https://kirodrow2.github.io/winToMac/ · [последняя версия (ZIP)](https://github.com/kirodrow2/winToMac/releases/latest/download/winToMac.zip)
 
+![winToMac: строка меню, док и живые обои](site/screenshot.jpg)
+
 Оболочка для Windows в стиле macOS: верхняя строка меню и нижний док. Работает только на основном мониторе.
 
 Без телеметрии: [политика конфиденциальности](PRIVACY.md) · [политика подписи кода](CODE_SIGNING.md)
