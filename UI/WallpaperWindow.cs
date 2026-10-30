@@ -171,11 +171,27 @@ public sealed class WallpaperWindow : Form
 
         _paused = paused;
         await RunScript($"setPaused({(paused ? "true" : "false")})");
+        // Пока обои не видно, движок отдаёт память системе
+        if (_web.CoreWebView2 is { } core)
+        {
+            try
+            {
+                core.MemoryUsageTargetLevel = paused ? CoreWebView2MemoryUsageTargetLevel.Low : CoreWebView2MemoryUsageTargetLevel.Normal;
+            }
+            catch (Exception)
+            {
+                // Старая среда WebView2 не умеет — не страшно
+            }
+        }
     }
 
     private async Task InitializeWebViewAsync()
     {
-        var options = new CoreWebView2EnvironmentOptions("--autoplay-policy=no-user-gesture-required");
+        // Обоям не нужны сеть, расширения, синхронизация и запасные процессы браузера — без них меньше памяти
+        var options = new CoreWebView2EnvironmentOptions(
+            "--autoplay-policy=no-user-gesture-required --renderer-process-limit=1 --disable-background-networking "
+            + "--disable-component-update --disable-sync --disable-extensions --no-first-run --disable-site-isolation-trials "
+            + "--disable-features=SpareRendererForSitePerProcess,msSmartScreenProtection,Translate,AutofillServerCommunication");
         var environment = await CoreWebView2Environment.CreateAsync(null, Path.Combine(DataFolder, "WebView2"), options);
         await _web.EnsureCoreWebView2Async(environment);
 

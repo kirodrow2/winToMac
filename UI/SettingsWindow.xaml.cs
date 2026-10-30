@@ -142,6 +142,7 @@ public partial class SettingsWindow : Window
         AddThemeChoice();
         AddCheck(L.T("Скрывать панель задач Windows"), () => S.HideWindowsTaskbar, v => S.HideWindowsTaskbar = v);
         AddAutostart();
+        AddCheck(L.T("Проверять обновления автоматически"), () => S.CheckForUpdates, v => S.CheckForUpdates = v);
     }
 
     private void AddSection(string title)

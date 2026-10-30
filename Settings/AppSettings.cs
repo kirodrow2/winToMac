@@ -130,6 +130,12 @@ public sealed class AppSettings
     /// </summary>
     public int? TaskbarOriginalState { get; set; }
 
+    /// <summary>Раз в 12 часов спрашивать GitHub, нет ли новой версии.</summary>
+    public bool CheckForUpdates { get; set; } = true;
+
+    /// <summary>Версия, которую пользователь попросил не предлагать.</summary>
+    public string? SkippedUpdateVersion { get; set; }
+
     public List<PinnedApp> PinnedApps { get; set; } = new();
 
     /// <summary>Название программы: папки настроек и обоев, автозапуск, заголовки.</summary>

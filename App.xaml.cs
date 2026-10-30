@@ -112,6 +112,8 @@ public partial class App : Application
 
         _fullScreenTimer.Tick += (_, _) => CheckFullScreen();
         _fullScreenTimer.Start();
+        UpdateWindow.StartBackgroundChecks();
+        MemoryTrimmer.Start();
     }
 
     protected override void OnExit(ExitEventArgs e)

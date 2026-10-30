@@ -308,6 +308,7 @@ public partial class TopBarWindow : Window
             .Add(L.T("Инструкция"), AboutWindow.OpenInstructions)
             .Add(L.T("Язык интерфейса: {0}", L.NameOf(L.Code)), () => LanguagePicker.ShowMenu(LogoItem))
             .Add(L.T("О программе и поддержка ♥"), AboutWindow.ShowSingle)
+            .Add(L.T("Проверить обновления…"), () => _ = UpdateWindow.CheckAsync(manual: true))
             .Add(L.T("💡 Предложить функцию (Telegram)"), () => SystemActions.OpenUri(ProjectLinks.Telegram))
             .Separator()
             .Add(L.T("Свернуть все окна"), () => App.Current.ShowDesktop(), hint: "Win+D")

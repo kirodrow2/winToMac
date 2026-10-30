@@ -4,17 +4,18 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 DOTNET="${DOTNET:-dotnet}"
-VERSION=$(grep -oP '(?<=<Version>)[^<]+' winToMac.csproj)
+PYTHON="${PYTHON:-python3}"
+VERSION=$(sed -n 's:.*<Version>\(.*\)</Version>.*:\1:p' winToMac.csproj)
 OUT=release/winToMac
 rm -rf release && mkdir -p "$OUT"
 "$DOTNET" publish winToMac.csproj -c Release -r win-x64 --self-contained true \
   -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true \
-  -p:EnableCompressionInSingleFile=true -p:DebugType=none -o release/publish
+  -p:EnableCompressionInSingleFile=false -p:DebugType=none -o release/publish
 cp release/publish/winToMac.exe "$OUT/"
 rm -rf release/publish
-python3 -I Docs/instructions.py "$OUT/Instructions" Assets/winToMac.png
+"$PYTHON" -I Docs/instructions.py "$OUT/Instructions" Assets/winToMac.png
 mkdir -p "$OUT/Licenses" && cp Licenses/* "$OUT/Licenses/"
-python3 -I - "$OUT" "release/winToMac-$VERSION.zip" <<'PY'
+"$PYTHON" -I - "$OUT" "release/winToMac-$VERSION.zip" <<'PY'
 import os, sys, zipfile
 src, dst = sys.argv[1], sys.argv[2]
 with zipfile.ZipFile(dst, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as archive:

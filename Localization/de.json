@@ -216,5 +216,18 @@
  "Alt (правый)": "Alt (rechts)",
  "💡 Не хватает какой-то функции? Напишите мне в Telegram {0} — добавлю её в новой версии.": "💡 Fehlt dir eine Funktion? Schreib mir auf Telegram {0} – ich baue sie in die nächste Version ein.",
  "Написать в Telegram": "Auf Telegram schreiben",
- "💡 Предложить функцию (Telegram)": "💡 Funktion vorschlagen (Telegram)"
+ "💡 Предложить функцию (Telegram)": "💡 Funktion vorschlagen (Telegram)",
+ "Не удалось проверить обновления: {0}": "Updates konnten nicht geprüft werden: {0}",
+ "У вас последняя версия {0}.": "Du hast die neueste Version {0}.",
+ "Обновление {0}": "{0}-Update",
+ "Доступна новая версия {0} (у вас {1})": "Neue Version {0} verfügbar (du hast {1})",
+ "Обновление скачается ({0} МБ) и установится само, программа перезапустится.": "Das Update ({0} MB) wird automatisch geladen und installiert; die App startet neu.",
+ "Пропустить эту версию": "Diese Version überspringen",
+ "Позже": "Später",
+ "Обновить": "Aktualisieren",
+ "Скачивание…": "Wird heruntergeladen…",
+ "Запуск новой версии…": "Neue Version wird gestartet…",
+ "Не удалось обновить: {0}": "Update fehlgeschlagen: {0}",
+ "Проверить обновления…": "Nach Updates suchen…",
+ "Проверять обновления автоматически": "Automatisch nach Updates suchen"
 }

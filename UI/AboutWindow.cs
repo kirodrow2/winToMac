@@ -109,6 +109,7 @@ public sealed class AboutWindow : Window
 
         var links = new WrapPanel { HorizontalAlignment = HorizontalAlignment.Center, Margin = new Thickness(0, 14, 0, 0) };
         links.Children.Add(CreateButton(L.T("Инструкция"), OpenInstructions));
+        links.Children.Add(CreateButton(L.T("Проверить обновления…"), () => _ = UpdateWindow.CheckAsync(manual: true)));
         if (!string.IsNullOrWhiteSpace(ProjectLinks.Website))
         {
             links.Children.Add(CreateButton(L.T("Сайт проекта"), () => SystemActions.OpenUri(ProjectLinks.Website)));

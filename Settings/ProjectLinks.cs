@@ -18,6 +18,9 @@ public static class ProjectLinks
     /// <summary>Страница проекта (GitHub, сайт). Пусто — кнопка не показывается.</summary>
     public const string Website = "https://kirodrow2.github.io/winToMac/";
 
+    /// <summary>Репозиторий на GitHub: отсюда берутся обновления.</summary>
+    public const string Repository = "kirodrow2/winToMac";
+
     /// <summary>Связь с автором: пожелания и новые функции.</summary>
     public const string Telegram = "https://t.me/KKIIIROO";
 

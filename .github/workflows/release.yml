@@ -1,0 +1,31 @@
+# Выпуск: push тега vX.Y.Z → сборка на Windows → GitHub Release с winToMac.zip.
+# Программа находит его сама (проверка обновлений) — вручную ничего загружать не нужно.
+name: Release
+on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Build
+        shell: bash
+        run: PYTHON=python ./build-release.sh
+      - name: Publish release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          NOTES="release-notes/${TAG}.md"
+          [ -f "$NOTES" ] || { echo "winToMac ${TAG#v}" > "$NOTES.tmp"; NOTES="$NOTES.tmp"; }
+          gh release create "$TAG" release/winToMac.zip --title "winToMac ${TAG#v}" --notes-file "$NOTES"
