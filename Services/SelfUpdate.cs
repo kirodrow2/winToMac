@@ -88,23 +88,37 @@ public static class SelfUpdate
             return false;
         }
 
-        string target = Path.Combine(Path.GetDirectoryName(current)!, MainExeName);
-        for (int attempt = 0; attempt < 10; attempt++)
+        string folder = Path.GetDirectoryName(current)!;
+        string target = Path.Combine(folder, MainExeName);
+        for (int attempt = 0; attempt < 20; attempt++)
         {
             try
             {
+                // Старый exe может держать антивирус или ещё не до конца вышедшая копия. Занятый exe
+                // нельзя перезаписать, но можно переименовать — тогда место winToMac.exe освобождается.
+                // Раньше в этом случае обновление тихо продолжало работать как winToMac.update.exe,
+                // а winToMac.exe оставался старым — и при следующем запуске снова предлагал обновиться.
+                if (attempt >= 4 && File.Exists(target))
+                {
+                    string aside = Path.Combine(folder, $"{AppSettings.ProductName}.old-{DateTime.Now:yyyyMMddHHmmss}.exe");
+                    File.Move(target, aside);
+                    StartupLog.Write($"Старый {MainExeName} занят — отложен как {Path.GetFileName(aside)}");
+                }
+
                 File.Copy(current, target, overwrite: true);
                 Process.Start(new ProcessStartInfo(target) { UseShellExecute = true });
+                StartupLog.Write($"Обновление встало на место {target}");
                 return true;
             }
-            catch (IOException)
+            catch (IOException exception)
             {
-                // Старая копия ещё не отпустила файл
+                StartupLog.Write($"Не удалось заменить {MainExeName} (попытка {attempt + 1}): {exception.Message}");
                 Thread.Sleep(500);
             }
-            catch (UnauthorizedAccessException)
+            catch (UnauthorizedAccessException exception)
             {
                 // Папка только для чтения — работаем как есть
+                StartupLog.Write($"Нет прав на замену {MainExeName}: {exception.Message}");
                 return false;
             }
         }
@@ -121,8 +135,10 @@ public static class SelfUpdate
             return;
         }
 
-        FixAutostart(current);
         string folder = Path.GetDirectoryName(current)!;
+        string main = Path.Combine(folder, MainExeName);
+        // Автозапуск всегда на winToMac.exe: временная winToMac.update.exe удаляется при следующем запуске
+        FixAutostart(File.Exists(main) ? main : current);
         var thread = new Thread(() =>
         {
             // Только что закрытые копии отпускают файлы не сразу

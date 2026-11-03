@@ -38,6 +38,10 @@ public static partial class AppCatalog
     [GeneratedRegex(@"^\{([0-9A-Fa-f\-]{36})\}\\(.+)$")]
     private static partial Regex KnownFolderPathRegex();
 
+    // …\WindowsApps\<Имя>_<Версия>_<Архитектура>_<Ресурс>_<Издатель>\… (в имени пакета «_» не бывает)
+    [GeneratedRegex(@"\\WindowsApps\\([^\\_]+)_[^\\_]+_[^\\_]+_[^\\_]*_([^\\_]+)\\", RegexOptions.IgnoreCase)]
+    private static partial Regex PackageFolderRegex();
+
     [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
     private static extern int SHGetKnownFolderPath(
         [MarshalAs(UnmanagedType.LPStruct)] Guid folderId, uint flags, IntPtr token, out string path);
@@ -67,6 +71,53 @@ public static partial class AppCatalog
         thread.IsBackground = true;
         thread.Start();
         return completion.Task;
+    }
+
+    /// <summary>
+    /// Приложения из Microsoft Store лежат в папке с номером версии
+    /// (…\WindowsApps\MSTeams_26260.1717…_x64__8wekyb3d8bbwe\ms-teams.exe) — после автообновления
+    /// такой путь пропадает вместе со значком. Закрепления по такому пути переводим на AUMID,
+    /// который от версии не зависит. true — что-то поправили.
+    /// </summary>
+    public static async Task<bool> FixPackagedPinsAsync(IReadOnlyList<PinnedApp> pinnedApps)
+    {
+        var versioned = pinnedApps
+            .Select(app => (App: app, Family: GetPackageFamily(app.LaunchTarget)))
+            .Where(pair => pair.Family != null)
+            .ToList();
+        if (versioned.Count == 0)
+        {
+            return false;
+        }
+
+        var apps = await GetAllAsync(refresh: true);
+        bool changed = false;
+        foreach (var (app, family) in versioned)
+        {
+            var candidates = apps
+                .Where(entry => entry.AppId?.StartsWith(family + "!", StringComparison.OrdinalIgnoreCase) == true)
+                .ToList();
+            var match = candidates.FirstOrDefault(entry => entry.Name.Equals(app.Name, StringComparison.CurrentCultureIgnoreCase))
+                ?? candidates.FirstOrDefault();
+            if (match == null)
+            {
+                continue;
+            }
+
+            app.LaunchTarget = match.LaunchTarget;
+            app.IconSource = match.LaunchTarget;
+            app.AppId = match.AppId;
+            changed = true;
+        }
+
+        return changed;
+    }
+
+    /// <summary>"…\WindowsApps\MSTeams_26260…_x64__8wekyb3d8bbwe\ms-teams.exe" → "MSTeams_8wekyb3d8bbwe".</summary>
+    private static string? GetPackageFamily(string path)
+    {
+        var match = PackageFolderRegex().Match(path);
+        return match.Success ? match.Groups[1].Value + "_" + match.Groups[2].Value : null;
     }
 
     public static void Launch(string target)

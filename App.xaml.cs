@@ -44,6 +44,9 @@ public partial class App : Application
             return;
         }
 
+        StartupLog.Write($"Запуск {Updater.CurrentVersion} из {Environment.ProcessPath}"
+            + $", Windows работает {TimeSpan.FromMilliseconds(Environment.TickCount64):hh\\:mm\\:ss}");
+
         // Новая версия запущена поверх старой — старая уступает место
         _singleInstance = new Mutex(true, "WinToMac.SingleInstance", out bool isFirst);
         if (!isFirst)
@@ -72,10 +75,15 @@ public partial class App : Application
 
         // Что бы ни случилось — панель задач и рабочая область Windows должны вернуться
         AppDomain.CurrentDomain.ProcessExit += (_, _) => RestoreSystem();
-        AppDomain.CurrentDomain.UnhandledException += (_, _) => RestoreSystem();
+        AppDomain.CurrentDomain.UnhandledException += (_, args) =>
+        {
+            StartupLog.Write("Сбой: " + args.ExceptionObject);
+            RestoreSystem();
+        };
         DispatcherUnhandledException += (_, args) =>
         {
             args.Handled = true;
+            StartupLog.Write("Ошибка: " + args.Exception);
             RestoreSystem();
 
             // Ошибка во время выхода — просто завершаемся, без окна и без повторного выхода
@@ -110,6 +118,8 @@ public partial class App : Application
         _dock = new DockWindow();
         _dock.Show();
 
+        FixPinnedApps();
+
         _fullScreenTimer.Tick += (_, _) => CheckFullScreen();
         _fullScreenTimer.Start();
         UpdateWindow.StartBackgroundChecks();
@@ -120,6 +130,22 @@ public partial class App : Application
     {
         RestoreSystem();
         base.OnExit(e);
+    }
+
+    /// <summary>Перевести закрепления Store-приложений с пути к версии на AUMID (см. AppCatalog).</summary>
+    public async void FixPinnedApps()
+    {
+        try
+        {
+            if (await AppCatalog.FixPackagedPinsAsync(AppSettings.Current.PinnedApps.ToList()))
+            {
+                AppSettings.Apply();
+            }
+        }
+        catch
+        {
+            // Список приложений не прочитался — останется как было, попробуем при следующем запуске
+        }
     }
 
     public void ShowLauncher()
@@ -284,6 +310,7 @@ public partial class App : Application
         }
 
         _isQuitting = true;
+        StartupLog.Write("Выход");
         try
         {
             _fullScreenTimer.Stop();

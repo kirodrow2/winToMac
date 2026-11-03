@@ -468,6 +468,7 @@ public partial class DockWindow : Window
             {
                 pinnedApps.Add(pinned);
                 AppSettings.Apply();
+                App.Current.FixPinnedApps();
             });
         }
 
