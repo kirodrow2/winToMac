@@ -19,6 +19,9 @@ public sealed class AppEntry
     public string? AppId { get; init; }
     public string? ExeName { get; init; }
 
+    /// <summary>Файл программы на диске (для «Свойств» и «Расположения файла»); у Store-приложений нет.</summary>
+    public string? TargetPath { get; init; }
+
     public string LaunchTarget => "shell:AppsFolder\\" + ParsingName;
 
     public PinnedApp ToPinned() => new()
@@ -183,6 +186,7 @@ public static partial class AppCatalog
                 ParsingName = parsingName,
                 AppId = looksLikePath ? null : parsingName,
                 ExeName = exeName,
+                TargetPath = targetPath,
             });
         }
 

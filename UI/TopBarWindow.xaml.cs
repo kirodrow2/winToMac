@@ -36,7 +36,14 @@ public partial class TopBarWindow : Window
     {
         InitializeComponent();
         SourceInitialized += OnSourceInitialized;
-        Closed += (_, _) => _appBar?.Dispose();
+        Closed += (_, _) =>
+        {
+            // Окно закрывают и без выхода из программы (режим «только клавиатура»)
+            _appBar?.Dispose();
+            AppSettings.Changed -= ApplySettings;
+            _fastTimer.Stop();
+            _slowTimer.Stop();
+        };
         AppSettings.Changed += ApplySettings;
 
         _fastTimer.Tick += (_, _) => UpdateFast();
@@ -305,6 +312,7 @@ public partial class TopBarWindow : Window
             .Add(L.T("Все приложения"), () => App.Current.ShowLauncher())
             .Add(L.T("Настройки winToMac…"), () => App.Current.ShowSettings())
             .Add(L.T("Живые обои…"), () => App.Current.ShowWallpapers())
+            .Add(L.T("Только клавиатура (скрыть док и строку меню)"), () => App.Current.SetKeyboardOnly(true))
             .Add(L.T("Инструкция"), AboutWindow.OpenInstructions)
             .Add(L.T("Язык интерфейса: {0}", L.NameOf(L.Code)), () => LanguagePicker.ShowMenu(LogoItem))
             .Add(L.T("О программе и поддержка ♥"), AboutWindow.ShowSingle)

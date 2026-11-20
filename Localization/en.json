@@ -229,5 +229,13 @@
  "Запуск новой версии…": "Starting the new version…",
  "Не удалось обновить: {0}": "Couldn't update: {0}",
  "Проверить обновления…": "Check for updates…",
- "Проверять обновления автоматически": "Check for updates automatically"
+ "Проверять обновления автоматически": "Check for updates automatically",
+ "Только клавиатура (скрыть док и строку меню)": "Keyboard only (hide Dock and menu bar)",
+ "Только клавиатура: без дока, строки меню и обоев": "Keyboard only: no Dock, menu bar or wallpaper",
+ "Показать док и строку меню": "Show Dock and menu bar",
+ "winToMac — только клавиатура": "winToMac — keyboard only",
+ "Запустить от имени администратора": "Run as administrator",
+ "Создать ярлык на рабочем столе": "Create desktop shortcut",
+ "Показать в Проводнике": "Show in File Explorer",
+ "Свойства": "Properties"
 }

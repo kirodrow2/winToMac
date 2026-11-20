@@ -124,6 +124,9 @@ public sealed class AppSettings
     public ThemeKind Theme { get; set; } = ThemeKind.Dark;
     public bool HideWindowsTaskbar { get; set; } = true;
 
+    /// <summary>Только клавиатура: без дока, строки меню и обоев, с обычной панелью задач Windows.</summary>
+    public bool KeyboardOnly { get; set; }
+
     /// <summary>
     /// Режим панели задач до того, как winToMac её спрятал. Хранится в настройках, чтобы его не потерять,
     /// если копию программы закрыли принудительно (обновление, диспетчер задач).

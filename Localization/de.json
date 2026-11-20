@@ -229,5 +229,13 @@
  "Запуск новой версии…": "Neue Version wird gestartet…",
  "Не удалось обновить: {0}": "Update fehlgeschlagen: {0}",
  "Проверить обновления…": "Nach Updates suchen…",
- "Проверять обновления автоматически": "Automatisch nach Updates suchen"
+ "Проверять обновления автоматически": "Automatisch nach Updates suchen",
+ "Только клавиатура (скрыть док и строку меню)": "Nur Tastatur (Dock und Menüleiste ausblenden)",
+ "Только клавиатура: без дока, строки меню и обоев": "Nur Tastatur: ohne Dock, Menüleiste und Hintergrund",
+ "Показать док и строку меню": "Dock und Menüleiste anzeigen",
+ "winToMac — только клавиатура": "winToMac — nur Tastatur",
+ "Запустить от имени администратора": "Als Administrator ausführen",
+ "Создать ярлык на рабочем столе": "Verknüpfung auf dem Desktop erstellen",
+ "Показать в Проводнике": "Im Explorer anzeigen",
+ "Свойства": "Eigenschaften"
 }

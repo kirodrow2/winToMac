@@ -229,5 +229,13 @@
  "Запуск новой версии…": "Démarrage de la nouvelle version…",
  "Не удалось обновить: {0}": "Échec de la mise à jour : {0}",
  "Проверить обновления…": "Rechercher des mises à jour…",
- "Проверять обновления автоматически": "Rechercher les mises à jour automatiquement"
+ "Проверять обновления автоматически": "Rechercher les mises à jour automatiquement",
+ "Только клавиатура (скрыть док и строку меню)": "Clavier seul (masquer le Dock et la barre des menus)",
+ "Только клавиатура: без дока, строки меню и обоев": "Clavier seul : sans Dock, barre des menus ni fond d'écran",
+ "Показать док и строку меню": "Afficher le Dock et la barre des menus",
+ "winToMac — только клавиатура": "winToMac — clavier seul",
+ "Запустить от имени администратора": "Exécuter en tant qu'administrateur",
+ "Создать ярлык на рабочем столе": "Créer un raccourci sur le Bureau",
+ "Показать в Проводнике": "Afficher dans l'Explorateur",
+ "Свойства": "Propriétés"
 }

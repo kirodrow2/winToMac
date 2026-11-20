@@ -73,3 +73,47 @@ UPDATES = {
 for _code, _values in UPDATES.items():
     assert len(_values) == len(U), _code
     EXTRA[_code].update(zip(U, _values))
+
+# Только клавиатура и действия в списке приложений (1.4)
+M = [
+    "Только клавиатура (скрыть док и строку меню)",
+    "Только клавиатура: без дока, строки меню и обоев",
+    "Показать док и строку меню",
+    "winToMac — только клавиатура",
+    "Запустить от имени администратора",
+    "Создать ярлык на рабочем столе",
+    "Показать в Проводнике",
+    "Свойства",
+]
+MODES = {
+    "en": ["Keyboard only (hide Dock and menu bar)", "Keyboard only: no Dock, menu bar or wallpaper",
+           "Show Dock and menu bar", "winToMac — keyboard only",
+           "Run as administrator", "Create desktop shortcut", "Show in File Explorer", "Properties"],
+    "zh": ["仅键盘（隐藏程序坞和菜单栏）", "仅键盘：不显示程序坞、菜单栏和壁纸",
+           "显示程序坞和菜单栏", "winToMac — 仅键盘",
+           "以管理员身份运行", "在桌面创建快捷方式", "在文件资源管理器中显示", "属性"],
+    "es": ["Solo teclado (ocultar Dock y barra de menús)", "Solo teclado: sin Dock, barra de menús ni fondo",
+           "Mostrar Dock y barra de menús", "winToMac — solo teclado",
+           "Ejecutar como administrador", "Crear acceso directo en el escritorio", "Mostrar en el Explorador", "Propiedades"],
+    "hi": ["केवल कीबोर्ड (डॉक और मेनू बार छिपाएँ)", "केवल कीबोर्ड: डॉक, मेनू बार और वॉलपेपर के बिना",
+           "डॉक और मेनू बार दिखाएँ", "winToMac — केवल कीबोर्ड",
+           "व्यवस्थापक के रूप में चलाएँ", "डेस्कटॉप पर शॉर्टकट बनाएँ", "फ़ाइल एक्सप्लोरर में दिखाएँ", "गुण"],
+    "ar": ["لوحة المفاتيح فقط (إخفاء Dock وشريط القوائم)", "لوحة المفاتيح فقط: بدون Dock وشريط القوائم والخلفية",
+           "إظهار Dock وشريط القوائم", "winToMac — لوحة المفاتيح فقط",
+           "تشغيل كمسؤول", "إنشاء اختصار على سطح المكتب", "إظهار في مستكشف الملفات", "الخصائص"],
+    "pt": ["Só teclado (ocultar Dock e barra de menus)", "Só teclado: sem Dock, barra de menus e papel de parede",
+           "Mostrar Dock e barra de menus", "winToMac — só teclado",
+           "Executar como administrador", "Criar atalho na área de trabalho", "Mostrar no Explorador", "Propriedades"],
+    "fr": ["Clavier seul (masquer le Dock et la barre des menus)", "Clavier seul : sans Dock, barre des menus ni fond d'écran",
+           "Afficher le Dock et la barre des menus", "winToMac — clavier seul",
+           "Exécuter en tant qu'administrateur", "Créer un raccourci sur le Bureau", "Afficher dans l'Explorateur", "Propriétés"],
+    "de": ["Nur Tastatur (Dock und Menüleiste ausblenden)", "Nur Tastatur: ohne Dock, Menüleiste und Hintergrund",
+           "Dock und Menüleiste anzeigen", "winToMac — nur Tastatur",
+           "Als Administrator ausführen", "Verknüpfung auf dem Desktop erstellen", "Im Explorer anzeigen", "Eigenschaften"],
+    "ja": ["キーボードのみ（Dock とメニューバーを隠す）", "キーボードのみ：Dock・メニューバー・壁紙なし",
+           "Dock とメニューバーを表示", "winToMac — キーボードのみ",
+           "管理者として実行", "デスクトップにショートカットを作成", "エクスプローラーで表示", "プロパティ"],
+}
+for _code, _values in MODES.items():
+    assert len(_values) == len(M), _code
+    EXTRA[_code].update(zip(M, _values))

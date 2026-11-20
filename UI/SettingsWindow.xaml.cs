@@ -140,6 +140,7 @@ public partial class SettingsWindow : Window
         ideaButton.Click += (_, _) => SystemActions.OpenUri(ProjectLinks.Telegram);
         SettingsPanel.Children.Add(ideaButton);
         AddThemeChoice();
+        AddCheck(L.T("Только клавиатура: без дока, строки меню и обоев"), () => S.KeyboardOnly, v => S.KeyboardOnly = v);
         AddCheck(L.T("Скрывать панель задач Windows"), () => S.HideWindowsTaskbar, v => S.HideWindowsTaskbar = v);
         AddAutostart();
         AddCheck(L.T("Проверять обновления автоматически"), () => S.CheckForUpdates, v => S.CheckForUpdates = v);

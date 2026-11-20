@@ -42,7 +42,14 @@ public partial class DockWindow : Window
     {
         InitializeComponent();
         SourceInitialized += OnSourceInitialized;
-        Closed += (_, _) => _appBar?.Dispose();
+        Closed += (_, _) =>
+        {
+            // Окно закрывают и без выхода из программы (режим «только клавиатура»)
+            _appBar?.Dispose();
+            AppSettings.Changed -= ApplySettings;
+            _frameTimer.Stop();
+            _refreshTimer.Stop();
+        };
         Drop += OnDrop;
         AppSettings.Changed += ApplySettings;
 

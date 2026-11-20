@@ -229,5 +229,13 @@
  "Запуск новой версии…": "Iniciando la nueva versión…",
  "Не удалось обновить: {0}": "No se pudo actualizar: {0}",
  "Проверить обновления…": "Buscar actualizaciones…",
- "Проверять обновления автоматически": "Buscar actualizaciones automáticamente"
+ "Проверять обновления автоматически": "Buscar actualizaciones automáticamente",
+ "Только клавиатура (скрыть док и строку меню)": "Solo teclado (ocultar Dock y barra de menús)",
+ "Только клавиатура: без дока, строки меню и обоев": "Solo teclado: sin Dock, barra de menús ni fondo",
+ "Показать док и строку меню": "Mostrar Dock y barra de menús",
+ "winToMac — только клавиатура": "winToMac — solo teclado",
+ "Запустить от имени администратора": "Ejecutar como administrador",
+ "Создать ярлык на рабочем столе": "Crear acceso directo en el escritorio",
+ "Показать в Проводнике": "Mostrar en el Explorador",
+ "Свойства": "Propiedades"
 }

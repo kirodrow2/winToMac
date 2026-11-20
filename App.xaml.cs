@@ -102,21 +102,15 @@ public partial class App : Application
         LegacyMigration.MigrateAfterLoad();
         L.Load(AppSettings.Current.UiLanguage);
         Theme.Apply();
-        ApplyTaskbarVisibility();
-        TrayHost.Start();
         KeyRemapper.Start();
         AppSettings.Changed += () =>
         {
             Theme.Apply();
-            ApplyTaskbarVisibility();
+            ApplyShell();
             ApplyWallpaper();
         };
+        ApplyShell();
         ApplyWallpaper();
-
-        _topBar = new TopBarWindow();
-        _topBar.Show();
-        _dock = new DockWindow();
-        _dock.Show();
 
         FixPinnedApps();
 
@@ -129,7 +123,76 @@ public partial class App : Application
     protected override void OnExit(ExitEventArgs e)
     {
         RestoreSystem();
+        KeyboardOnlyTray.Hide();
         base.OnExit(e);
+    }
+
+    public void SetKeyboardOnly(bool keyboardOnly)
+    {
+        AppSettings.Current.KeyboardOnly = keyboardOnly;
+        AppSettings.Apply();
+    }
+
+    /// <summary>
+    /// Порядок как при выходе: в «только клавиатуре» сначала убираем свои панели, потом возвращаем
+    /// панель задач; в обычном режиме сначала прячем панель задач, потом поднимаем трей и свои панели.
+    /// </summary>
+    private void ApplyShell()
+    {
+        if (AppSettings.Current.KeyboardOnly)
+        {
+            ApplyVisualMode();
+            ApplyTaskbarVisibility();
+        }
+        else
+        {
+            ApplyTaskbarVisibility();
+            ApplyVisualMode();
+        }
+    }
+
+    /// <summary>
+    /// Обычный режим — док и строка меню. «Только клавиатура» — окна закрываются (вместе с их таймерами
+    /// и резервом места на экране), возвращается панель задач Windows, а сочетания клавиш продолжают работать.
+    /// Вернуться можно из значка winToMac в трее Windows или из настроек.
+    /// </summary>
+    private void ApplyVisualMode()
+    {
+        if (AppSettings.Current.KeyboardOnly)
+        {
+            KeyboardOnlyTray.Show();
+            if (_topBar == null && _dock == null)
+            {
+                return;
+            }
+
+            _topBar?.Close();
+            _topBar = null;
+            _dock?.Close();
+            _dock = null;
+            _barsHidden = false;
+            TrayHost.Stop();
+            WorkArea.Restore();
+            StartupLog.Write("Режим «только клавиатура»");
+            return;
+        }
+
+        KeyboardOnlyTray.Hide();
+        if (_topBar != null)
+        {
+            return;
+        }
+
+        if (TrayHost.Area == null)
+        {
+            TrayHost.Start();
+        }
+
+        _barsHidden = false;
+        _topBar = new TopBarWindow();
+        _topBar.Show();
+        _dock = new DockWindow();
+        _dock.Show();
     }
 
     /// <summary>Перевести закрепления Store-приложений с пути к версии на AUMID (см. AppCatalog).</summary>
@@ -228,7 +291,7 @@ public partial class App : Application
     private void ApplyWallpaper()
     {
         var settings = AppSettings.Current;
-        if (!settings.WallpaperEnabled || string.IsNullOrEmpty(settings.WallpaperSource))
+        if (!settings.WallpaperEnabled || settings.KeyboardOnly || string.IsNullOrEmpty(settings.WallpaperSource))
         {
             if (_wallpaper != null)
             {
@@ -311,6 +374,7 @@ public partial class App : Application
 
         _isQuitting = true;
         StartupLog.Write("Выход");
+        KeyboardOnlyTray.Hide();
         try
         {
             _fullScreenTimer.Stop();
@@ -413,7 +477,7 @@ public partial class App : Application
 
     private static void ApplyTaskbarVisibility()
     {
-        if (AppSettings.Current.HideWindowsTaskbar)
+        if (AppSettings.Current.HideWindowsTaskbar && !AppSettings.Current.KeyboardOnly)
         {
             TaskbarHider.Hide();
         }

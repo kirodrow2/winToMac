@@ -1,3 +1,4 @@
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -180,10 +181,25 @@ public partial class LauncherWindow : Window
         {
             e.Handled = true;
             bool isFavorite = FindPinned(tile) != null;
+            string? file = GetFile(tile);
             new MacMenu()
                 .Header(tile.Name)
                 .Add(L.T("Открыть"), () => Launch(tile))
+                .Add(L.T("Запустить от имени администратора"), () =>
+                {
+                    Hide();
+                    AppActions.RunAsAdministrator(tile.LaunchTarget);
+                })
+                .Separator()
                 .Add(isFavorite ? L.T("Убрать из избранного") : L.T("Добавить в избранное"), () => ToggleFavorite(tile))
+                .Add(L.T("Создать ярлык на рабочем столе"), () => AppActions.CreateDesktopShortcut(tile.Name, tile.LaunchTarget))
+                .Separator()
+                .Add(L.T("Показать в Проводнике"), () =>
+                {
+                    Hide();
+                    AppActions.OpenFileLocation(file!);
+                }, enabled: file != null)
+                .Add(L.T("Свойства"), () => AppActions.ShowProperties(file!), enabled: file != null)
                 .Show(view, PlacementMode.MousePoint);
         };
         return view;
@@ -234,6 +250,14 @@ public partial class LauncherWindow : Window
         }
 
         AppSettings.Apply();
+    }
+
+    /// <summary>Файл программы на диске — у Store-приложений его нет, «Свойства» для них недоступны.</summary>
+    private static string? GetFile(Tile tile)
+    {
+        string? path = tile.Entry?.TargetPath
+            ?? (tile.LaunchTarget.StartsWith("shell:", StringComparison.OrdinalIgnoreCase) ? null : tile.LaunchTarget);
+        return path != null && File.Exists(path) ? path : null;
     }
 
     private void Launch(Tile tile)
