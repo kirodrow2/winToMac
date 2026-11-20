@@ -133,6 +133,12 @@ public sealed class AppSettings
     /// </summary>
     public int? TaskbarOriginalState { get; set; }
 
+    /// <summary>
+    /// Автоскрытие панели задач сейчас включено самой программой. Если копию закрыли принудительно,
+    /// следующая видит флаг и не примет это автоскрытие за настройку пользователя.
+    /// </summary>
+    public bool TaskbarAutoHiddenByApp { get; set; }
+
     /// <summary>Раз в 12 часов спрашивать GitHub, нет ли новой версии.</summary>
     public bool CheckForUpdates { get; set; } = true;
 

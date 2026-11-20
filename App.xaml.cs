@@ -20,6 +20,7 @@ public partial class App : Application
     private readonly DispatcherTimer _fullScreenTimer = new() { Interval = TimeSpan.FromMilliseconds(500) };
     private bool _barsHidden;
     private bool _isQuitting;
+    private bool _isWorkAreaReleased;
 
     public static new App Current => (App)Application.Current;
 
@@ -142,7 +143,19 @@ public partial class App : Application
         if (AppSettings.Current.KeyboardOnly)
         {
             ApplyVisualMode();
+            bool wasHidden = TaskbarHider.IsHidden || AppSettings.Current.TaskbarAutoHiddenByApp;
             ApplyTaskbarVisibility();
+            if (wasHidden)
+            {
+                // Панель задач только что вернулась — отдаём ей её место после того, как она покажется
+                var timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(700) };
+                timer.Tick += (_, _) =>
+                {
+                    timer.Stop();
+                    WorkArea.Disable();
+                };
+                timer.Start();
+            }
         }
         else
         {
@@ -163,6 +176,14 @@ public partial class App : Application
             KeyboardOnlyTray.Show();
             if (_topBar == null && _dock == null)
             {
+                // Запуск сразу в этом режиме: прошлая копия могла закрыться аварийно и оставить
+                // рабочую область с отступами под док и строку меню
+                if (!_isWorkAreaReleased)
+                {
+                    _isWorkAreaReleased = true;
+                    WorkArea.Disable();
+                }
+
                 return;
             }
 
@@ -172,7 +193,8 @@ public partial class App : Application
             _dock = null;
             _barsHidden = false;
             TrayHost.Stop();
-            WorkArea.Restore();
+            WorkArea.Disable();
+            _isWorkAreaReleased = true;
             StartupLog.Write("Режим «только клавиатура»");
             return;
         }
@@ -183,6 +205,8 @@ public partial class App : Application
             return;
         }
 
+        WorkArea.Enable();
+        _isWorkAreaReleased = false;
         if (TrayHost.Area == null)
         {
             TrayHost.Start();
@@ -481,8 +505,9 @@ public partial class App : Application
         {
             TaskbarHider.Hide();
         }
-        else if (TaskbarHider.IsHidden)
+        else if (TaskbarHider.IsHidden || AppSettings.Current.TaskbarOriginalState != null || AppSettings.Current.TaskbarAutoHiddenByApp)
         {
+            // Второе условие — панель задач осталась спрятанной после аварийного выхода прошлой копии
             TaskbarHider.Restore();
         }
     }

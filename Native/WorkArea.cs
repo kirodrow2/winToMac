@@ -21,6 +21,10 @@ public static class WorkArea
     private static int _bottom;
     private static DispatcherTimer? _timer;
 
+    // Выключено в режиме «только клавиатура»: закрытые док и строка меню ещё успевают прислать
+    // свои отступы, и таймер начинал спорить с панелью задач Windows — окна дёргались
+    private static bool _isEnabled = true;
+
     /// <summary>Сколько раз уже подгоняли окно: если программа упрямо возвращает своё положение, отступаем.</summary>
     private static readonly Dictionary<IntPtr, int> FitAttempts = new();
 
@@ -28,14 +32,41 @@ public static class WorkArea
     public static void SetTop(int pixels)
     {
         _top = pixels;
-        Apply();
+        if (_isEnabled)
+        {
+            Apply();
+        }
     }
 
     /// <summary>Сколько физических пикселей снизу занято доком (0 — док не резервирует место).</summary>
     public static void SetBottom(int pixels)
     {
         _bottom = pixels;
-        Apply();
+        if (_isEnabled)
+        {
+            Apply();
+        }
+    }
+
+    /// <summary>Перестать управлять рабочей областью и вернуть её Windows (режим «только клавиатура»).</summary>
+    public static void Disable()
+    {
+        _isEnabled = false;
+        _top = 0;
+        _bottom = 0;
+        FitAttempts.Clear();
+        Restore();
+
+        // Развёрнутые окна сами под новую область не переедут — остались бы с отступами под док и строку меню
+        var area = new RECT();
+        SystemParametersInfo(SPI_GETWORKAREA, 0, ref area, 0);
+        FitMaximizedWindows(area);
+    }
+
+    /// <summary>Снова управлять рабочей областью — перед тем как показать док и строку меню.</summary>
+    public static void Enable()
+    {
+        _isEnabled = true;
     }
 
     public static void Restore()
@@ -52,7 +83,47 @@ public static class WorkArea
         _timer = null;
         var (width, height) = NativeMethods.GetPrimaryScreenSize();
         var full = new RECT { Left = 0, Top = 0, Right = width, Bottom = height };
+        ExcludeVisibleTaskbar(ref full);
         SystemParametersInfo(SPI_SETWORKAREA, 0, ref full, SPIF_SENDCHANGE);
+    }
+
+    /// <summary>
+    /// Если панель задач Windows уже видна, её место из рабочей области вычитаем сами:
+    /// Explorer пересчитывает область только при изменении самой панели, а не после нашей правки.
+    /// </summary>
+    private static void ExcludeVisibleTaskbar(ref RECT area)
+    {
+        IntPtr tray = TaskbarHider.FindExplorerTaskbar();
+        if (tray == IntPtr.Zero || !NativeMethods.IsWindowVisible(tray) || !NativeMethods.GetWindowRect(tray, out var bar))
+        {
+            return;
+        }
+
+        // Спрятанная автоскрытием панель почти целиком за краем экрана — место она не занимает
+        int visibleHeight = Math.Min(bar.Bottom, area.Bottom) - Math.Max(bar.Top, area.Top);
+        int visibleWidth = Math.Min(bar.Right, area.Right) - Math.Max(bar.Left, area.Left);
+        if (visibleHeight <= 4 || visibleWidth <= 4)
+        {
+            return;
+        }
+
+        bool isHorizontal = bar.Width >= bar.Height;
+        if (isHorizontal && bar.Top > area.Top)
+        {
+            area.Bottom = Math.Min(area.Bottom, bar.Top);
+        }
+        else if (isHorizontal)
+        {
+            area.Top = Math.Max(area.Top, bar.Bottom);
+        }
+        else if (bar.Left > area.Left)
+        {
+            area.Right = Math.Min(area.Right, bar.Left);
+        }
+        else
+        {
+            area.Left = Math.Max(area.Left, bar.Right);
+        }
     }
 
     private static void Apply()
@@ -60,7 +131,13 @@ public static class WorkArea
         if (_timer == null)
         {
             _timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
-            _timer.Tick += (_, _) => Apply();
+            _timer.Tick += (_, _) =>
+            {
+                if (_isEnabled)
+                {
+                    Apply();
+                }
+            };
             _timer.Start();
         }
 

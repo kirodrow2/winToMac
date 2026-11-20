@@ -32,9 +32,18 @@ public static class TaskbarHider
         var settings = WinToMac.Settings.AppSettings.Current;
         if (settings.TaskbarOriginalState == null)
         {
-            settings.TaskbarOriginalState = (int)NativeMethods.SHAppBarMessage(ABM_GETSTATE, ref data).ToUInt32();
-            WinToMac.Settings.AppSettings.Save();
+            int state = (int)NativeMethods.SHAppBarMessage(ABM_GETSTATE, ref data).ToUInt32();
+            // Автоскрытие осталось от прошлой копии, которую закрыли, не дав вернуть панель, — это не выбор пользователя
+            if (settings.TaskbarAutoHiddenByApp)
+            {
+                state &= ~ABS_AUTOHIDE;
+            }
+
+            settings.TaskbarOriginalState = state;
         }
+
+        settings.TaskbarAutoHiddenByApp = true;
+        WinToMac.Settings.AppSettings.Save();
 
         _originalState = settings.TaskbarOriginalState;
 
@@ -65,7 +74,7 @@ public static class TaskbarHider
     /// Окно панели задач именно проводника: служба трея (ManagedShell) создаёт своё окно
     /// с тем же классом Shell_TrayWnd, и FindWindow может вернуть его.
     /// </summary>
-    private static IntPtr FindExplorerTaskbar()
+    public static IntPtr FindExplorerTaskbar()
     {
         IntPtr found = IntPtr.Zero;
         NativeMethods.EnumWindows((hwnd, _) =>
@@ -100,11 +109,20 @@ public static class TaskbarHider
         }
 
         _timer = null;
+        var settings = WinToMac.Settings.AppSettings.Current;
+        _originalState ??= settings.TaskbarOriginalState;
 
         IntPtr tray = FindExplorerTaskbar();
         if (tray == IntPtr.Zero)
         {
             return;
+        }
+
+        if (_originalState == null && settings.TaskbarAutoHiddenByApp)
+        {
+            // Исходное состояние потеряно, но автоскрытие точно включали мы — просто снимаем его
+            var current = new APPBARDATA { cbSize = Marshal.SizeOf<APPBARDATA>(), hWnd = tray };
+            _originalState = (int)NativeMethods.SHAppBarMessage(ABM_GETSTATE, ref current).ToUInt32() & ~ABS_AUTOHIDE;
         }
 
         if (_originalState is int state)
@@ -119,7 +137,8 @@ public static class TaskbarHider
             _originalState = null;
             try
             {
-                WinToMac.Settings.AppSettings.Current.TaskbarOriginalState = null;
+                settings.TaskbarOriginalState = null;
+                settings.TaskbarAutoHiddenByApp = false;
                 WinToMac.Settings.AppSettings.Save();
             }
             catch
